@@ -12,6 +12,8 @@ package:
   exclude:
     - data/**
     - notebooks/**
+  include:
+    - ../../libs/**
 
 provider:
   name: aws

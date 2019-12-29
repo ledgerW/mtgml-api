@@ -1,3 +1,6 @@
+import sys
+sys.path.append('../..')
+
 import unittest
 from libs.payment_lib import *
 

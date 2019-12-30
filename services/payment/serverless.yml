@@ -83,6 +83,10 @@ functions:
           path: checkout_complete
           method: get
           cors: true
+      - http:
+          path: checkout_complete
+          method: post
+          cors: true
   payment:
     handler: payment.main
     layers:

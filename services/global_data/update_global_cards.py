@@ -28,11 +28,12 @@ client = boto3.client('lambda')
 def save_scryfall_page(table, page):
     dynamo_batches = [(first, first+BATCH_LIMIT) for first in list(range(0, CARDS_PER_PAGE, BATCH_LIMIT))]
 
+    if page % 10 == 0 or page==1:
+        print('page in scryfall saver: {}'.format(page))
+        logger.info(print('page in scryfall saver: {}'.format(page)))
+
     res = requests.get(CARDS_URL.format(page))
     for batch in dynamo_batches:
-        if page % 10 == 0:
-            print('page in scryfall saver: {}'.format(page))
-
         cards = res.json()['data'][batch[0]:batch[1]]
         for idx, card in enumerate(cards):
             for key, val in card.items():
@@ -50,7 +51,7 @@ def save_scryfall_page(table, page):
             ]
         }
         dynamo_res = dynamodb_lib.call(table, 'batch_write_item', RequestItems)
-        return dynamo_res
+    return res.json()['has_more']
 
 
 def master(event, context):
@@ -79,18 +80,20 @@ def worker(event, context):
     '''
     Trigger: http post from master
     Accept range of scryfall pages to collect from master,
+    call each page,
     then collect them and load to GLOBAL_CARDS_TABLE
     '''
+    print(event)
+    logger.info(event)
     try:
         table = os.environ['GLOBAL_CARDS_TABLE']
-        pages = json.loads(event)
-
-        logger.info('event: {}'.format(event))
-        logger.info('pages: {}'.format(pages))
+        pages = event
 
         # Get cards from Scryfall
         for page in range(pages['first'], pages['last']):
-            _ = save_scryfall_page(table, page)
+            if has_more:
+                sleep(0.1)
+                has_more = save_scryfall_page(table, page)
 
         response = success({'status': True})
     except:

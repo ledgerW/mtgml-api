@@ -65,7 +65,6 @@ provider:
         - es:ESHttpHead
         # Lambda Actions (for master to call worker)
         - lambda:InvokeFunction
-        - lambda:InvokeAsync
       # Restrict our IAM role permissions to
       # the specific table for the stage
       Resource:

@@ -81,10 +81,11 @@ def worker(event, context):
     Accept range of scryfall pages to collect from master,
     then collect them and load to GLOBAL_CARDS_TABLE
     '''
-    logger.info(event['body'])
+    logger.info(event)
+    logger.info(event['Payload'])
     try:
         table = os.environ['GLOBAL_CARDS_TABLE']
-        pages = json.loads(event['body'])
+        pages = json.loads(event['Payload'])
 
         # Get cards from Scryfall
         for page in range(pages['first'], pages['last']):

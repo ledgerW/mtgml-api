@@ -30,6 +30,8 @@ def save_scryfall_page(table, page):
 
     res = requests.get(CARDS_URL.format(page))
     for batch in dynamo_batches:
+        if page % 10 == 0:
+            logger.info('page {}'.format(page))
 
         cards = res.json()['data'][batch[0]:batch[1]]
         for idx, card in enumerate(cards):
@@ -47,7 +49,8 @@ def save_scryfall_page(table, page):
                 } for card in cards
             ]
         }
-        _ = dynamodb_lib.call(table, 'batch_write_item', RequestItems)
+        dynamo_res = dynamodb_lib.call(table, 'batch_write_item', RequestItems)
+        return dynamo_res
 
 
 def master(event, context):
@@ -64,6 +67,7 @@ def master(event, context):
     worker_pages = [(first, first+PAGES_PER_WORKER) for first in list(range(1, total_pages+1, PAGES_PER_WORKER))]
 
     for pages in worker_pages:
+        logger.info(pages)
         response = client.invoke(
             FunctionName='mtgml-global-data-{}-cards_worker'.format(os.environ['stage']),
             Payload=json.dumps({"first": pages[0], "last": pages[1]}))
@@ -77,13 +81,14 @@ def worker(event, context):
     Accept range of scryfall pages to collect from master,
     then collect them and load to GLOBAL_CARDS_TABLE
     '''
+    logger.info(event['body'])
     try:
         table = os.environ['GLOBAL_CARDS_TABLE']
         pages = json.loads(event['body'])
 
         # Get cards from Scryfall
         for page in range(pages['first'], pages['last']):
-            save_scryfall_page(table, page)
+            _ = save_scryfall_page(table, page)
 
         response = success({'status': True})
     except:

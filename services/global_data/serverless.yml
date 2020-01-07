@@ -63,6 +63,9 @@ provider:
         - es:ESHttpDelete
         - es:ESHttpGet
         - es:ESHttpHead
+        # Lambda Actions (for master to call worker)
+        - lambda:InvokeFunction
+        - lambda:InvokeAsync
       # Restrict our IAM role permissions to
       # the specific table for the stage
       Resource:
@@ -73,6 +76,7 @@ provider:
         - 'Fn::ImportValue': ${self:custom.resources_stage}-UserDecksTableArn
         - 'Fn::ImportValue': ${self:custom.resources_stage}-UserCardsTableArn
         - 'Fn::ImportValue': ${self:custom.resources_stage}-CardSearchDomainArn
+        - "*"
 
 functions:
   cards_master:

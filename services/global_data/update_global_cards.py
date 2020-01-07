@@ -28,9 +28,6 @@ client = boto3.client('lambda')
 def save_scryfall_page(table, page):
     dynamo_batches = [(first, first+BATCH_LIMIT) for first in list(range(0, CARDS_PER_PAGE, BATCH_LIMIT))]
 
-    if page % 10 == 0 or page==1:
-        logger.info(print('page in scryfall saver: {}'.format(page)))
-
     res = requests.get(CARDS_URL.format(page))
     for batch in dynamo_batches:
         cards = res.json()['data'][batch[0]:batch[1]]
@@ -50,6 +47,8 @@ def save_scryfall_page(table, page):
             ]
         }
         dynamo_res = dynamodb_lib.call(table, 'batch_write_item', RequestItems)
+        if len(dynamo_res['UnprocessedItems'])>0:
+            logger.info(dynamo_res)
         sleep(0.1)
     return res.json()['has_more']
 

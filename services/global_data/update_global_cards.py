@@ -29,7 +29,6 @@ def save_scryfall_page(table, page):
     dynamo_batches = [(first, first+BATCH_LIMIT) for first in list(range(0, CARDS_PER_PAGE, BATCH_LIMIT))]
 
     if page % 10 == 0 or page==1:
-        print('page in scryfall saver: {}'.format(page))
         logger.info(print('page in scryfall saver: {}'.format(page)))
 
     res = requests.get(CARDS_URL.format(page))
@@ -51,7 +50,7 @@ def save_scryfall_page(table, page):
             ]
         }
         dynamo_res = dynamodb_lib.call(table, 'batch_write_item', RequestItems)
-        logger.info(dynamo_res)
+        sleep(0.1)
     return res.json()['has_more']
 
 
@@ -85,7 +84,6 @@ def worker(event, context):
     call each page,
     then collect them and load to GLOBAL_CARDS_TABLE
     '''
-    print(event)
     logger.info(event)
     try:
         table = os.environ['GLOBAL_CARDS_TABLE']

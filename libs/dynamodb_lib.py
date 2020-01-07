@@ -9,8 +9,6 @@ def call(table, action, params):
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table(table)
 
-    print('in dynamodb_lib')
-
     try:
         xray_recorder.begin_subsegment(action)
         if action == 'put_item':
@@ -25,7 +23,8 @@ def call(table, action, params):
                                           ExpressionAttributeValues=params['ExpressionAttributeValues'],
                                           ReturnValues=params['ReturnValues'])
         elif action == 'batch_write_item':
-            return getattr(client, action)(RequestItems=params)
+            return getattr(client, action)(RequestItems=params,
+                                           ReturnConsumedCapacity='TOTAL')
     except Exception as e:
         print(e)
         xray_recorder.end_subsegment()
@@ -39,7 +38,22 @@ def batch_format(val):
     if type(val) is float:
         return {"N": str(val)}
     if type(val) is list:
-        return {"SS": val} if len(val)>0 else {"SS": ['empty']}
+        if len(val)>0:
+            if type(val[0]) is str:
+                return {"SS": val}
+            if type(val[0]) is int:
+                return {"NS": [str(item) for item in val]}
+            if type(val[0]) is float:
+                return {"NS": [str(item) for item in val]}
+            if type(val[0]) is dict:
+                return {
+                        "M": {
+                                idx: {dict_key: batch_format(dict_val) for dict_key, dict_val in dict_item.items()
+                                } for idx, dict_item in enumerate(val)
+                            }
+                        }
+        else:
+            return {"SS": ['empty']}
     if type(val) is bool:
         return {"BOOL": True}
     if val is None:

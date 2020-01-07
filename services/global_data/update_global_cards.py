@@ -31,7 +31,7 @@ def save_scryfall_page(table, page):
     res = requests.get(CARDS_URL.format(page))
     for batch in dynamo_batches:
         if page % 10 == 0:
-            logger.info('page {}'.format(page))
+            print('page in scryfall saver: {}'.format(page))
 
         cards = res.json()['data'][batch[0]:batch[1]]
         for idx, card in enumerate(cards):
@@ -84,6 +84,9 @@ def worker(event, context):
     try:
         table = os.environ['GLOBAL_CARDS_TABLE']
         pages = json.loads(event)
+
+        logger.info('event: {}'.format(event))
+        logger.info('pages: {}'.format(pages))
 
         # Get cards from Scryfall
         for page in range(pages['first'], pages['last']):

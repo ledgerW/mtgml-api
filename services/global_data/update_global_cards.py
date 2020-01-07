@@ -30,6 +30,7 @@ def save_scryfall_page(table, page):
 
     res = requests.get(CARDS_URL.format(page))
     for batch in dynamo_batches:
+        
         cards = res.json()['data'][batch[0]:batch[1]]
         for idx, card in enumerate(cards):
             for key, val in card.items():
@@ -46,10 +47,14 @@ def save_scryfall_page(table, page):
                 } for card in cards
             ]
         }
-        dynamo_res = dynamodb_lib.call(table, 'batch_write_item', RequestItems)
-        if len(dynamo_res['UnprocessedItems'])>0:
-            logger.info(dynamo_res)
-        sleep(0.1)
+        try:
+            dynamo_res = dynamodb_lib.call(table, 'batch_write_item', RequestItems)
+            if len(dynamo_res['UnprocessedItems'])>0:
+                logger.info(dynamo_res)
+            sleep(0.1)
+        except e:
+            logger.info(page)
+            logger.info(e)
     return res.json()['has_more']
 
 
@@ -74,6 +79,7 @@ def master(event, context):
             Payload=json.dumps({"first": pages[0], "last": pages[1]}))
 
         logger.info(response)
+    return success({'status': True})
 
 
 def worker(event, context):
@@ -84,17 +90,17 @@ def worker(event, context):
     then collect them and load to GLOBAL_CARDS_TABLE
     '''
     logger.info(event)
-    try:
-        table = os.environ['GLOBAL_CARDS_TABLE']
-        pages = event
+    table = os.environ['GLOBAL_CARDS_TABLE']
+    pages = event
 
-        # Get cards from Scryfall
-        has_more = True
-        for page in range(pages['first'], pages['last']):
-            if has_more:
-                sleep(0.1)
+    # Get cards from Scryfall
+    has_more = True
+    for page in range(pages['first'], pages['last']):
+        if has_more:
+            sleep(0.1)
+            try:
                 has_more = save_scryfall_page(table, page)
-
-        return success({'status': True})
-    except:
-        return failure({'status': False})
+            except:
+                logger.info(page)
+                return failure({'status': False})
+    return success({'status': True})

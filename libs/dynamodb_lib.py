@@ -48,7 +48,8 @@ def batch_format(val):
             if type(val[0]) is dict:
                 return {
                         "M": {
-                                idx: {dict_key: batch_format(dict_val) for dict_key, dict_val in dict_item.items()
+                                str(idx): {
+                                    "M": {dict_key: batch_format(dict_val) for dict_key, dict_val in dict_item.items()}
                                 } for idx, dict_item in enumerate(val)
                             }
                         }

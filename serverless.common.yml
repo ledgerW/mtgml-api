@@ -19,8 +19,11 @@ custom:
   globalCardsTable: ${self:custom.stage}-global-cards
   userDecksTable: ${self:custom.stage}-user-decks
   userCardsTable: ${self:custom.stage}-user-cards
+  cardSearchDomainEndpoint:
+    'Fn::ImportValue': ${self:custom.resources_stage}-CardSearchDomainEndpoint
   pythonRequirements:
-    layer: true
+    layer:
+      name: ${self:provider.stage}-${self:service}
 
 lambdaPolicyXRay:
   Effect: Allow

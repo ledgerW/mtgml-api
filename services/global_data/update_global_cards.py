@@ -51,6 +51,7 @@ def save_scryfall_page(table, page):
             ]
         }
         dynamo_res = dynamodb_lib.call(table, 'batch_write_item', RequestItems)
+        logger.info(dynamo_res)
     return res.json()['has_more']
 
 
@@ -71,6 +72,7 @@ def master(event, context):
         logger.info(pages)
         response = client.invoke(
             FunctionName='mtgml-global-data-{}-cards_worker'.format(os.environ['stage']),
+            InvocationType='Event',
             Payload=json.dumps({"first": pages[0], "last": pages[1]}))
 
         logger.info(response)
@@ -90,13 +92,12 @@ def worker(event, context):
         pages = event
 
         # Get cards from Scryfall
+        has_more = True
         for page in range(pages['first'], pages['last']):
             if has_more:
                 sleep(0.1)
                 has_more = save_scryfall_page(table, page)
 
-        response = success({'status': True})
+        return success({'status': True})
     except:
-        response = failure({'status': False})
-
-    return response
+        return failure({'status': False})

@@ -52,6 +52,7 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
+        - dynamodb:BatchWriteItem
         # Dynamo Stream Actions
         - dynamodb:GetRecords
         - dynamodb:GetShardIterator

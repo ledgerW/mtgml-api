@@ -86,7 +86,7 @@ functions:
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
     events:
-      - schedule: cron(0 1 * * ? *)
+      - schedule: cron(0 6 * * ? *)
       - http:
           path: global_cards_master
           method: get
@@ -111,7 +111,7 @@ functions:
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
     events:
-      - schedule: cron(0 1 * * ? *)
+      - schedule: cron(0 6 * * ? *)
       - http:
           path: update_global_decks
           method: get

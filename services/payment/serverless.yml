@@ -66,6 +66,7 @@ provider:
 functions:
   subscribe:
     handler: subscribe.main
+    memorySize: 512
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
     events:
@@ -76,6 +77,7 @@ functions:
           authorizer: aws_iam
   checkout_complete:
     handler: checkout_complete.main
+    memorySize: 512
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
     events:
@@ -89,6 +91,7 @@ functions:
           cors: true
   payment:
     handler: payment.main
+    memorySize: 512
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
     events:

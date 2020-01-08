@@ -81,7 +81,7 @@ provider:
 functions:
   cards_master:
     handler: update_global_cards.master
-    memorySize: 3008
+    memorySize: 512
     timeout: 900
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
@@ -94,7 +94,7 @@ functions:
           authorizer: aws_iam
   cards_worker:
     handler: update_global_cards.worker
-    memorySize: 3008
+    memorySize: 512
     timeout: 900
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
@@ -106,7 +106,7 @@ functions:
           authorizer: aws_iam
   decks:
     handler: update_global_decks.main
-    memorySize: 3008
+    memorySize: 512
     timeout: 900
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
@@ -119,7 +119,7 @@ functions:
           authorizer: aws_iam
   sync_card_search:
     handler: sync_card_search.main
-    memorySize: 3008
+    memorySize: 512
     timeout: 60
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
@@ -127,4 +127,4 @@ functions:
       - stream:
         type: dynamodb
         arn:
-          'Fn::ImportValue': ${self:custom.resources_stage}-GlobalCardsTableStreamArn
+          Fn::ImportValue: ${self:custom.resources_stage}-GlobalCardsTableStreamArn

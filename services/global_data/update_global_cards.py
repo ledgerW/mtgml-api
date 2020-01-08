@@ -1,5 +1,6 @@
 import sys
 sys.path.append('../..')
+sys.setrecursionlimit(100000)
 
 import os
 import boto3
@@ -20,7 +21,7 @@ from libs.response_lib import success, failure
 CARDS_URL = 'https://api.scryfall.com/cards?page={}'
 CARDS_PER_PAGE = 175
 PAGES_PER_WORKER = 100
-BATCH_LIMIT = 25
+BATCH_LIMIT = 15
 
 client = boto3.client('lambda')
 
@@ -30,7 +31,7 @@ def save_scryfall_page(table, page):
 
     res = requests.get(CARDS_URL.format(page))
     for batch in dynamo_batches:
-        
+        sleep(0.3)
         cards = res.json()['data'][batch[0]:batch[1]]
         for idx, card in enumerate(cards):
             for key, val in card.items():
@@ -51,7 +52,6 @@ def save_scryfall_page(table, page):
             dynamo_res = dynamodb_lib.call(table, 'batch_write_item', RequestItems)
             if len(dynamo_res['UnprocessedItems'])>0:
                 logger.info(dynamo_res)
-            sleep(0.1)
         except e:
             logger.info(page)
             logger.info(e)

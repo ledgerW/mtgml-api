@@ -23,7 +23,7 @@ custom:
     'Fn::ImportValue': ${self:custom.resources_stage}-CardSearchDomainEndpoint
   pythonRequirements:
     layer:
-      name: ${self:provider.stage}-${self:service}
+      name: ${self:service}
 
 lambdaPolicyXRay:
   Effect: Allow

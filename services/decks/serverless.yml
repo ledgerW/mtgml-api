@@ -61,6 +61,7 @@ provider:
 functions:
   create:
     handler: create.main
+    memorySize: 512
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
     events:
@@ -71,6 +72,7 @@ functions:
           authorizer: aws_iam
   get:
     handler: get.main
+    memorySize: 512
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
     events:
@@ -81,6 +83,7 @@ functions:
           authorizer: aws_iam
   list:
     handler: list.main
+    memorySize: 512
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
     events:
@@ -91,6 +94,7 @@ functions:
           authorizer: aws_iam
   update:
     handler: update.main
+    memorySize: 512
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
     events:
@@ -101,6 +105,7 @@ functions:
           authorizer: aws_iam
   delete:
     handler: delete.main
+    memorySize: 512
     layers:
       - {Ref: PythonRequirementsLambdaLayer}
     events:

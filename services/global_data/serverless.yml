@@ -125,6 +125,6 @@ functions:
       - {Ref: PythonRequirementsLambdaLayer}
     events:
       - stream:
-        type: dynamodb
-        arn:
-          Fn::ImportValue: ${self:custom.resources_stage}-GlobalCardsTableStreamArn
+          type: dynamodb
+          arn:
+            Fn::ImportValue: ${self:custom.resources_stage}-GlobalCardsTableStreamArn

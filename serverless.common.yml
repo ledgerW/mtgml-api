@@ -15,12 +15,12 @@ custom:
   # Set the table name here so we can use it while testing locally
   usersTable: ${self:custom.stage}-users
   subscriptionsTable: ${self:custom.stage}-subscriptions
-  globalDecksTable: ${self:custom.stage}-global-decks
-  globalCardsTable: ${self:custom.stage}-global-cards
+  globalDecksTable: global-decks
+  globalCardsTable: global-cards
   userDecksTable: ${self:custom.stage}-user-decks
   userCardsTable: ${self:custom.stage}-user-cards
   cardSearchDomainEndpoint:
-    'Fn::ImportValue': ${self:custom.resources_stage}-CardSearchDomainEndpoint
+    'Fn::ImportValue': CardSearchDomainEndpoint
   pythonRequirements:
     layer:
       name: ${self:service}

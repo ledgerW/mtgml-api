@@ -21,7 +21,7 @@ from libs.response_lib import success, failure
 CARDS_URL = 'https://api.scryfall.com/cards?page={}'
 CARDS_PER_PAGE = 175
 PAGES_PER_WORKER = 100
-BATCH_LIMIT = 15
+BATCH_LIMIT = 12
 
 client = boto3.client('lambda')
 
@@ -51,7 +51,7 @@ def save_scryfall_page(table, page):
         try:
             dynamo_res = dynamodb_lib.call(table, 'batch_write_item', RequestItems)
             if len(dynamo_res['UnprocessedItems'])>0:
-                logger.info(dynamo_res)
+                logger.info('Number of UnprocessedItems: {}'.format(len(dynamo_res['UnprocessedItems'])))
         except e:
             logger.info(page)
             logger.info(e)
@@ -78,7 +78,6 @@ def master(event, context):
             InvocationType='Event',
             Payload=json.dumps({"first": pages[0], "last": pages[1]}))
 
-        logger.info(response)
     return success({'status': True})
 
 
@@ -89,7 +88,6 @@ def worker(event, context):
     call each page,
     then collect them and load to GLOBAL_CARDS_TABLE
     '''
-    logger.info(event)
     table = os.environ['GLOBAL_CARDS_TABLE']
     pages = event
 

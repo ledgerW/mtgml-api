@@ -53,8 +53,8 @@ provider:
       Resource:
         - 'Fn::ImportValue': ${self:custom.resources_stage}-UsersTableArn
         - 'Fn::ImportValue': ${self:custom.resources_stage}-SubscriptionsTableArn
-        - 'Fn::ImportValue': ${self:custom.resources_stage}-GlobalDecksTableArn
-        - 'Fn::ImportValue': ${self:custom.resources_stage}-GlobalCardsTableArn
+        - 'Fn::ImportValue': GlobalDecksTableArn
+        - 'Fn::ImportValue': GlobalCardsTableArn
         - 'Fn::ImportValue': ${self:custom.resources_stage}-UserDecksTableArn
         - 'Fn::ImportValue': ${self:custom.resources_stage}-UserCardsTableArn
 

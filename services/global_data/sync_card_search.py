@@ -14,7 +14,8 @@ logger.setLevel(logging.INFO)
 
 def main(event, context):
     if True:
-        logger.info(event['Records'])
+        logger.info('Number of Records: {}'.format(len(event['Records'])))
+        return success({'status': True})
     else:
         host = os.environ['CARD_SEARCH_DOMAIN_ENDPOINT']
         region = 'us-east-1'

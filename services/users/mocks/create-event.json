@@ -1,0 +1,8 @@
+{
+  "body": "{\"email\":\"ledger.west@gmail.com\",\"userName\":\"lw2134\",\"arenaName\":\"lw2134\"}",
+  "requestContext": {
+    "identity": {
+      "cognitoIdentityId": "f3faa537-8257-474f-8ac2-cb16cc605671"
+    }
+  }
+}

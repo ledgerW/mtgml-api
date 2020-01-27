@@ -71,7 +71,7 @@ functions:
       - {Ref: PythonRequirementsLambdaLayer}
     events:
       - http:
-          path: decks
+          path: users
           method: post
           cors: true
           authorizer: aws_iam
@@ -82,7 +82,7 @@ functions:
       - {Ref: PythonRequirementsLambdaLayer}
     events:
       - http:
-          path: decks/{id}
+          path: users/{id}
           method: get
           cors: true
           authorizer: aws_iam
@@ -93,7 +93,7 @@ functions:
       - {Ref: PythonRequirementsLambdaLayer}
     events:
       - http:
-          path: decks/{id}
+          path: users/{id}
           method: put
           cors: true
           authorizer: aws_iam
@@ -104,7 +104,7 @@ functions:
       - {Ref: PythonRequirementsLambdaLayer}
     events:
       - http:
-          path: decks/{id}
+          path: users/{id}
           method: delete
           cors: true
           authorizer: aws_iam

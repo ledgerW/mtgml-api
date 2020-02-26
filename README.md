@@ -18,7 +18,7 @@ Uses SEED deployment manager
   - prod
   - **service deployment order**
     1. decks
-    2. payment
+    2. payment & users
 4. **mtgml-background-jobs**
   - prod (only)
   - **service deployment order**

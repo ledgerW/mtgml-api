@@ -18,7 +18,7 @@ Resources:
                   - ':'
                   - Ref: AWS::AccountId
                   - ':'
-                  - Ref: ApiGatewayRestApi
+                  - Ref: restApiId
                   - '/*'
       Roles:
         - 'Fn::ImportValue': CognitoAuthRole-${self:custom.resources_stage}

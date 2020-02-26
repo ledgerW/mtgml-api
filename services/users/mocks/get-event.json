@@ -1,7 +1,4 @@
 {
-  "pathParameters": {
-    "id": "f3faa537-8257-474f-8ac2-cb16cc605671"
-  },
   "requestContext": {
     "identity": {
       "cognitoIdentityId": "f3faa537-8257-474f-8ac2-cb16cc605671"

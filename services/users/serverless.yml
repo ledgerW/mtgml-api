@@ -82,7 +82,7 @@ functions:
       - {Ref: PythonRequirementsLambdaLayer}
     events:
       - http:
-          path: users/{id}
+          path: users
           method: get
           cors: true
           authorizer: aws_iam
@@ -93,7 +93,7 @@ functions:
       - {Ref: PythonRequirementsLambdaLayer}
     events:
       - http:
-          path: users/{id}
+          path: users
           method: put
           cors: true
           authorizer: aws_iam
@@ -104,7 +104,7 @@ functions:
       - {Ref: PythonRequirementsLambdaLayer}
     events:
       - http:
-          path: users/{id}
+          path: users
           method: delete
           cors: true
           authorizer: aws_iam

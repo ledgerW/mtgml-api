@@ -19,28 +19,20 @@ def main(event, context):
     except:
         try:
             Key = {
-                'email': event['queryStringParameters']['email']
+                'userId': event['queryStringParameters']['email']
             }
             result = dynamodb_lib.call(table, 'get_item', Key)
 
             data = result['Item']
-
             data['userId'] = event['requestContext']['identity']['cognitoIdentityId']
 
-            update_expression = 'SET ' + ', '.join(['{key} = :{key}'.format(key=key) for key in data.keys()])
-            expression_att_vals = {':{}'.format(key): data[key] for key in data.keys()}
+            # insert new item with final congito id
+            result = dynamodb_lib.call(table, 'put_item', data)
 
-            params = {
-                'Key': {
-                    'email': event['queryStringParameters']['email']
-                },
-                'UpdateExpression': update_expression,
-                'ExpressionAttributeValues': expression_att_vals,
-                'ReturnValues': 'ALL_NEW'
-            }
-            result = dynamodb_lib.call(table, 'update_item', params)
+            # now remove original entry with temp userId
+            _ = dynamodb_lib.call(table, 'delete_item', Key)
 
-            response = success(result['Item'])
+            response = success(data)
         except:
             response = failure({'status': False, 'error': 'Item not found.'})
 

@@ -14,7 +14,7 @@ def main(event, context):
     try:
         data = json.loads(event['body'])
         Item = {
-                'userId': data['cognitoIdentityId'],
+                'userId': data['userSub'],
                 'email': data['email'],
                 'userName': data['email'].split('@')[0],
                 'arenaName': None,

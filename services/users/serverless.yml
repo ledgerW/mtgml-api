@@ -74,7 +74,6 @@ functions:
           path: users
           method: post
           cors: true
-          authorizer: aws_iam
   get:
     handler: get.main
     memorySize: 256

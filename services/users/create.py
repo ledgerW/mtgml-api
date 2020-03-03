@@ -14,11 +14,11 @@ def main(event, context):
     try:
         data = json.loads(event['body'])
         Item = {
-                'userId': event['requestContext']['identity']['cognitoIdentityId'],
-                'email': data['email'] if data['email'] != '' else None,
-                'userName': data['userName'] if data['userName'] != '' else None,
-                'arenaName': data['arenaName'] if data['arenaName'] != '' else None,
-                'profilePic': 'default',
+                'userId': data['cognitoIdentityId'],
+                'email': data['email'],
+                'userName': data['email'].split('@')[0],
+                'arenaName': None,
+                'profilePic': 'defaultProfile.png',
                 'createdAt': str(datetime.datetime.now())
         }
         _ = dynamodb_lib.call(table, 'put_item', Item)

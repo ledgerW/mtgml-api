@@ -1,5 +1,5 @@
 {
-  "body": "{\"content\":\"hello world\",\"attachment\":\"hello.jpg\"}",
+  "body": "{\"email\":\"lwest@mosaicdatascience.com\"}",
   "requestContext": {
     "identity": {
       "cognitoIdentityId": "0d1fac75-ee70-44f2-8de7-59fd3eef206c"

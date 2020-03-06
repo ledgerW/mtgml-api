@@ -18,7 +18,7 @@ def main(event, context):
                 'email': data['email'],
                 'userName': data['email'].split('@')[0],
                 'arenaName': None,
-                'profilePic': 'defaultProfile.png',
+                'profilePic': None,
                 'createdAt': str(datetime.datetime.now())
         }
         _ = dynamodb_lib.call(table, 'put_item', Item)

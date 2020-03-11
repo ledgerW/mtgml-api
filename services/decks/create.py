@@ -17,6 +17,7 @@ def main(event, context):
         Item = {
                 'userId': event['requestContext']['identity']['cognitoIdentityId'],
                 'deckId': str(uuid.uuid1()),
+                'name': data['name'],
                 'content': data['content'],
                 'attachment': data['attachment'],
                 'createdAt': str(datetime.datetime.now())

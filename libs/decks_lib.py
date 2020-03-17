@@ -36,4 +36,14 @@ def get_card_key(card):
 
     result = dynamodb_lib.call(table, 'query', params)
 
+    if len(result['Items']) < 1:
+        params = {
+            'IndexName': 'name-index',
+            'KeyConditionExpression': Key('name').eq(card['name']),
+            'FilterExpression': Attr('lang').eq('en'),
+            'ProjectionExpression': 'cardId'
+        }
+
+        result = dynamodb_lib.call(table, 'query', params)
+
     return result['Items'][0]['cardId']

@@ -19,7 +19,10 @@ def main(event, context):
         cards = parse_deck_list(data['content'])
 
         for i, card in enumerate(cards):
-            cards[i]['cardId'] = get_card_key(card)
+            try:
+                cards[i]['cardId'] = get_card_key(card)
+            except:
+                print('DID NOT FIND: {}'.format(card))
 
         Item = {
                 'userId': event['requestContext']['identity']['cognitoIdentityId'],

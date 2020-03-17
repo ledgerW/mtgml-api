@@ -16,7 +16,7 @@ def call(table, action, params):
         elif action == 'get_item' or action == 'delete_item':
             return getattr(table, action)(Key=params)
         elif action == 'query':
-            return getattr(table, action)(KeyConditionExpression=params['KeyConditionExpression'])
+            return getattr(table, action)(**params)
         elif action == 'update_item':
             return getattr(table, action)(Key=params['Key'],
                                           UpdateExpression=params['UpdateExpression'],

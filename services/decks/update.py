@@ -5,6 +5,7 @@ import json
 import os
 import libs.dynamodb_lib as dynamodb_lib
 from libs.response_lib import success, failure
+from libs.decks_lib import parse_deck_list, get_card_key
 
 
 def main(event, context):
@@ -12,18 +13,26 @@ def main(event, context):
         table = os.environ['USER_DECKS_TABLE']
         data = json.loads(event['body'])
 
+        cards = parse_deck_list(data['content'])
+
+        for i, card in enumerate(cards):
+            cards[i]['cardId'] = get_card_key(card)
+
+        data['cards'] = cards
+
+        update_expression = 'SET ' + ', '.join(['{key} = :{key}'.format(key=key) for key in data.keys()])
+        expression_att_vals = {':{}'.format(key): data[key] for key in data.keys()}
+
         params = {
             'Key': {
                 'userId': event['requestContext']['identity']['cognitoIdentityId'],
                 'deckId': event['pathParameters']['id']
             },
-            'UpdateExpression': 'SET content = :content, attachment = :attachment',
-            'ExpressionAttributeValues': {
-                ':attachment': data['attachment'],
-                ':content': data['content']
-            },
+            'UpdateExpression': update_expression,
+            'ExpressionAttributeValues': expression_att_vals,
             'ReturnValues': 'ALL_NEW'
         }
+
         result = dynamodb_lib.call(table, 'update_item', params)
 
         response = success({'status': True})

@@ -23,6 +23,7 @@ def main(event, context):
             'ExpressionAttributeValues': expression_att_vals,
             'ReturnValues': 'ALL_NEW'
         }
+
         result = dynamodb_lib.call(table, 'update_item', params)
 
         response = success({'status': True})

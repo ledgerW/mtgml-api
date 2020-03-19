@@ -25,6 +25,9 @@ def call(table, action, params):
         elif action == 'batch_write_item':
             return getattr(client, action)(RequestItems=params,
                                            ReturnConsumedCapacity='TOTAL')
+        elif action == 'batch_get_item':
+            return getattr(client, action)(RequestItems=params,
+                                           ReturnConsumedCapacity='TOTAL')
     except Exception as e:
         print(e)
         xray_recorder.end_subsegment()

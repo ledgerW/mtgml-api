@@ -13,7 +13,7 @@ def main(event, context):
     table = os.environ['USER_DECKS_TABLE']
     cards_table = os.environ['GLOBAL_CARDS_TABLE']
 
-    atts_to_get = "#n, #mc, #s, #sn, #tl, rarity, #ot, #iu, prices, #pu, legalities"
+    atts_to_get = "cardId, #n, #mc, #s, #sn, #tl, rarity, #ot, #iu, prices, #pu, legalities"
     proj_expr = {"#n":"name", "#mc":"mana_cost", "#s":"set", "#sn":"set_name", "#tl":"type_line", "#ot":"oracle_text", "#iu":"image_uris", "#pu":"purchase_uris"}
 
     #try:
@@ -22,7 +22,7 @@ def main(event, context):
         'deckId': event['pathParameters']['id']
     }
     result = dynamodb_lib.call(table, 'get_item', Key)
-    response = success(result['Item'])
+    result['Item']['cards_data'] = []
 
     # Get deck stats if on analyze page
     if event['queryStringParameters']['analyze']:
@@ -43,7 +43,7 @@ def main(event, context):
         }
 
         dynamo_res = dynamodb_lib.call(table, 'batch_get_item', RequestItems)
-        response = success(dynamo_res['Responses'][cards_table])
+        result['Item']['cards_data'] = dynamo_res['Responses'][cards_table]
 
         # Get remaining cards if more than 100 or more than 16MB returned
         if len(dynamo_res['UnprocessedKeys'])>0:
@@ -54,7 +54,7 @@ def main(event, context):
                 cards_table: {
                     'Keys': [
                         {
-                          'cardId': {'s': card.cardId}
+                          'cardId': {'s': card['cardId']}
                         } for card in remaining_cards
                     ],
                     'ProjectionExpression': atts_to_get,
@@ -63,11 +63,13 @@ def main(event, context):
             }
 
             remaining_res = dynamodb_lib.call(table, 'batch_get_item', RequestItems)
-            response = success(dynamo_res['Responses'][cards_table] + remaining_res['Responses'][cards_table])
+            result['Item']['cards_data'] = dynamo_res['Responses'][cards_table] + remaining_res['Responses'][cards_table]
+
+    response = success(result['Item'])
 
     #except:
     #    e = sys.exc_info()[0]
     #    logger.info(e)
-    #    response = failure({'status': False, 'error': 'Item not found.'})
+    #    response = failure({'status': False, 'error': 'Deck not found.'})
 
     return response

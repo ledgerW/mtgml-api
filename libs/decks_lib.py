@@ -22,17 +22,19 @@ def parse_deck_list(content):
     return cards
 
 
-def get_card_key(card):
+def get_card_data(card):
     table = os.environ['GLOBAL_CARDS_TABLE']
-    name = card['name']
-    set =  card['set']
+
+    atts_to_get = "cardId, #ci, colors, #n, #mc, #s, #sn, #tl, rarity, #ot, #iu, prices, #pu, legalities, #cf"
+    proj_expr = {"#n":"name", "#ci":"color_identity", "#mc":"mana_cost", "#s":"set", "#sn":"set_name", "#tl":"type_line", "#ot":"oracle_text", "#iu":"image_uris", "#pu":"purchase_uris", "#cf":"card_faces"}
 
 
     params = {
         'IndexName': 'name-index',
         'KeyConditionExpression': Key('name').eq(card['name']),
         'FilterExpression': Attr('lang').eq('en') & Attr('set').eq(card['set']),
-        'ProjectionExpression': 'cardId'
+        'ProjectionExpression': atts_to_get,
+        'ExpressionAttributeNames': proj_expr
     }
 
     result = dynamodb_lib.call(table, 'query', params)
@@ -42,7 +44,8 @@ def get_card_key(card):
             'IndexName': 'name-index',
             'KeyConditionExpression': Key('name').eq(card['name']),
             'FilterExpression': Attr('lang').eq('en'),
-            'ProjectionExpression': 'cardId'
+            'ProjectionExpression': atts_to_get,
+            'ExpressionAttributeNames': proj_expr
         }
 
         result = dynamodb_lib.call(table, 'query', params)
@@ -52,7 +55,8 @@ def get_card_key(card):
             'IndexName': 'set-name-index',
             'KeyConditionExpression': Key('set').eq(card['set']) & Key('name').begins_with(card['name']),
             'FilterExpression': Attr('lang').eq('en'),
-            'ProjectionExpression': 'cardId'
+            'ProjectionExpression': atts_to_get,
+            'ExpressionAttributeNames': proj_expr
         }
 
         result = dynamodb_lib.call(table, 'query', params)
@@ -62,9 +66,18 @@ def get_card_key(card):
             'IndexName': 'set-name-index',
             'KeyConditionExpression': Key('set').eq(card['set']) & Key('name').begins_with(card['name']),
             'FilterExpression': Attr('lang').eq('en'),
-            'ProjectionExpression': 'cardId'
+            'ProjectionExpression': atts_to_get,
+            'ExpressionAttributeNames': proj_expr
         }
 
         result = dynamodb_lib.call(table, 'query', params)
 
-    return result['Items'][0]['cardId']
+    if 'oracle_text' not in result['Items'][0]:
+        txt1 = result['Items'][0]['card_faces']['0']['oracle_text']
+        txt2 = result['Items'][0]['card_faces']['1']['oracle_text']
+        result['Items'][0]['oracle_text'] = '{} // {}'.format(txt1, txt2)
+        result['Items'][0].pop('card_faces')
+
+    print(result['Items'][0].keys())
+
+    return result['Items'][0]

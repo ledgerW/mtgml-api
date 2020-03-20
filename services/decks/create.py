@@ -7,7 +7,7 @@ import uuid
 import datetime
 import libs.dynamodb_lib as dynamodb_lib
 from libs.response_lib import success, failure
-from libs.decks_lib import parse_deck_list, get_card_key
+from libs.decks_lib import parse_deck_list, get_card_data
 
 
 def main(event, context):
@@ -19,10 +19,9 @@ def main(event, context):
         cards = parse_deck_list(data['content'])
 
         for i, card in enumerate(cards):
-            try:
-                cards[i]['cardId'] = get_card_key(card)
-            except:
-                print('DID NOT FIND: {}'.format(card))
+            cards[i]['data'] = get_card_data(card)
+
+        print(cards[0]['data']['image_uris']['art_crop'])
 
         Item = {
                 'userId': event['requestContext']['identity']['cognitoIdentityId'],
@@ -30,6 +29,7 @@ def main(event, context):
                 'name': data['name'],
                 'content': data['content'],
                 'cards': cards,
+                'display': cards[0]['data']['image_uris']['art_crop'],
                 'attachment': data['attachment'],
                 'createdAt': str(datetime.datetime.now())
         }

@@ -34,7 +34,7 @@ def main(event, context):
                 'createdAt': str(datetime.datetime.now())
         }
 
-        _ = dynamodb_lib.call(table, 'put_item', Item)
+        #_ = dynamodb_lib.call(table, 'put_item', Item)
 
         response = success(Item)
     except:

@@ -27,6 +27,7 @@ def get_card_key(card):
     name = card['name']
     set =  card['set']
 
+
     params = {
         'IndexName': 'name-index',
         'KeyConditionExpression': Key('name').eq(card['name']),
@@ -40,6 +41,26 @@ def get_card_key(card):
         params = {
             'IndexName': 'name-index',
             'KeyConditionExpression': Key('name').eq(card['name']),
+            'FilterExpression': Attr('lang').eq('en'),
+            'ProjectionExpression': 'cardId'
+        }
+
+        result = dynamodb_lib.call(table, 'query', params)
+
+    if len(result['Items']) < 1:
+        params = {
+            'IndexName': 'set-name-index',
+            'KeyConditionExpression': Key('set').eq(card['set']) & Key('name').begins_with(card['name']),
+            'FilterExpression': Attr('lang').eq('en'),
+            'ProjectionExpression': 'cardId'
+        }
+
+        result = dynamodb_lib.call(table, 'query', params)
+
+    if len(result['Items']) < 1:
+        params = {
+            'IndexName': 'set-name-index',
+            'KeyConditionExpression': Key('set').eq(card['set']) & Key('name').begins_with(card['name']),
             'FilterExpression': Attr('lang').eq('en'),
             'ProjectionExpression': 'cardId'
         }

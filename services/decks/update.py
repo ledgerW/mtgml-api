@@ -5,7 +5,7 @@ import json
 import os
 import libs.dynamodb_lib as dynamodb_lib
 from libs.response_lib import success, failure
-from libs.decks_lib import parse_deck_list, get_card_key
+from libs.decks_lib import parse_deck_list, get_card_data
 
 
 def main(event, context):
@@ -16,9 +16,10 @@ def main(event, context):
         cards = parse_deck_list(data['content'])
 
         for i, card in enumerate(cards):
-            cards[i]['data'] = get_card_key(card)
+            cards[i]['data'] = get_card_data(card)
 
         data['cards'] = cards
+        data['display'] = cards[0]['data']['image_uris']['art_crop']
 
         update_expression = 'SET ' + ', '.join(['{key} = :{key}'.format(key=key) for key in data.keys()])
         expression_att_vals = {':{}'.format(key): data[key] for key in data.keys()}

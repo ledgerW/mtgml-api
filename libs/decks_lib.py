@@ -78,6 +78,4 @@ def get_card_data(card):
         result['Items'][0]['oracle_text'] = '{} // {}'.format(txt1, txt2)
         result['Items'][0].pop('card_faces')
 
-    print(result['Items'][0].keys())
-
     return result['Items'][0]

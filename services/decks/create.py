@@ -21,8 +21,6 @@ def main(event, context):
         for i, card in enumerate(cards):
             cards[i]['data'] = get_card_data(card)
 
-        print(cards[0]['data']['image_uris']['art_crop'])
-
         Item = {
                 'userId': event['requestContext']['identity']['cognitoIdentityId'],
                 'deckId': str(uuid.uuid1()),

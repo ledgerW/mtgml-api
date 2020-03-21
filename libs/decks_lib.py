@@ -25,14 +25,14 @@ def parse_deck_list(content):
 def get_card_data(card):
     table = os.environ['GLOBAL_CARDS_TABLE']
 
-    atts_to_get = "cardId, #ci, colors, #n, #mc, #s, #sn, #tl, rarity, #ot, #iu, prices, #pu, legalities, #cf"
+    atts_to_get = "cardId, power, toughness, #ci, colors, #n, #mc, #s, #sn, #tl, rarity, #ot, #iu, prices, #pu, legalities, #cf"
     proj_expr = {"#n":"name", "#ci":"color_identity", "#mc":"mana_cost", "#s":"set", "#sn":"set_name", "#tl":"type_line", "#ot":"oracle_text", "#iu":"image_uris", "#pu":"purchase_uris", "#cf":"card_faces"}
 
 
     params = {
-        'IndexName': 'name-index',
-        'KeyConditionExpression': Key('name').eq(card['name']),
-        'FilterExpression': Attr('lang').eq('en') & Attr('set').eq(card['set']),
+        'IndexName': 'lang-name-index',
+        'KeyConditionExpression': Key('lang').eq('en') & Key('name').eq(card['name']),
+        'FilterExpression': Attr('set').eq(card['set']),
         'ProjectionExpression': atts_to_get,
         'ExpressionAttributeNames': proj_expr
     }
@@ -41,9 +41,8 @@ def get_card_data(card):
 
     if len(result['Items']) < 1:
         params = {
-            'IndexName': 'name-index',
-            'KeyConditionExpression': Key('name').eq(card['name']),
-            'FilterExpression': Attr('lang').eq('en'),
+            'IndexName': 'lang-name-index',
+            'KeyConditionExpression': Key('lang').eq('en') & Key('name').eq(card['name']),
             'ProjectionExpression': atts_to_get,
             'ExpressionAttributeNames': proj_expr
         }
@@ -52,9 +51,9 @@ def get_card_data(card):
 
     if len(result['Items']) < 1:
         params = {
-            'IndexName': 'set-name-index',
-            'KeyConditionExpression': Key('set').eq(card['set']) & Key('name').begins_with(card['name']),
-            'FilterExpression': Attr('lang').eq('en'),
+            'IndexName': 'lang-name-index',
+            'KeyConditionExpression': Key('lang').eq('en') & Key('name').begins_with(card['name']),
+            'FilterExpression': Attr('set').eq(card['set']),
             'ProjectionExpression': atts_to_get,
             'ExpressionAttributeNames': proj_expr
         }
@@ -63,15 +62,15 @@ def get_card_data(card):
 
     if len(result['Items']) < 1:
         params = {
-            'IndexName': 'set-name-index',
-            'KeyConditionExpression': Key('set').eq(card['set']) & Key('name').begins_with(card['name']),
-            'FilterExpression': Attr('lang').eq('en'),
+            'IndexName': 'lang-name-index',
+            'KeyConditionExpression': Key('lang').eq('en') & Key('name').begins_with(card['name']),
             'ProjectionExpression': atts_to_get,
             'ExpressionAttributeNames': proj_expr
         }
 
         result = dynamodb_lib.call(table, 'query', params)
 
+    # These are Adventure cards
     if 'oracle_text' not in result['Items'][0]:
         txt1 = result['Items'][0]['card_faces']['0']['oracle_text']
         txt2 = result['Items'][0]['card_faces']['1']['oracle_text']

@@ -27,10 +27,6 @@ def main(event, context):
         expression_att_vals = {':{}'.format(key): data[key] for key in data.keys()}
         expression_att_names = {'#name': 'name'}
 
-        print('update_expression: {}'.format(update_expression))
-        print('expression_att_vals: {}'.format(expression_att_vals))
-        print('expression_att_names: {}'.format(expression_att_names))
-
         params = {
             'Key': {
                 'userId': event['requestContext']['identity']['cognitoIdentityId'],

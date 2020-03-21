@@ -18,10 +18,7 @@ def call(table, action, params):
         elif action == 'query':
             return getattr(table, action)(**params)
         elif action == 'update_item':
-            return getattr(table, action)(Key=params['Key'],
-                                          UpdateExpression=params['UpdateExpression'],
-                                          ExpressionAttributeValues=params['ExpressionAttributeValues'],
-                                          ReturnValues=params['ReturnValues'])
+            return getattr(table, action)(**params)
         elif action == 'batch_write_item':
             return getattr(client, action)(RequestItems=params,
                                            ReturnConsumedCapacity='TOTAL')

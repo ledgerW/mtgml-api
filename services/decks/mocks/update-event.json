@@ -1,5 +1,5 @@
 {
-  "body": "{\"content\":\"Deck\\n4 Healer's Hawk (GRN) 14\\n1 Foulmire Knight (ELD) 90\\n4 Garruk, Cursed Huntsman (ELD) 191\",\"attachment\":\"new.jpg\"}",
+  "body": "{\"content\":\"Deck\\n4 Healer's Hawk (GRN) 14\\n1 Foulmire Knight (ELD) 90\",\"name\":\"new name\"}",
   "pathParameters": {
     "id": "ad97b6a4-6a65-11ea-9a89-2816ad93ab83"
   },

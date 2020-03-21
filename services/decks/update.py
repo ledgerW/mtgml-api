@@ -22,7 +22,14 @@ def main(event, context):
         data['display'] = cards[0]['data']['image_uris']['art_crop']
 
         update_expression = 'SET ' + ', '.join(['{key} = :{key}'.format(key=key) for key in data.keys()])
+        update_expression = update_expression.replace('name =', '#name =')
+
         expression_att_vals = {':{}'.format(key): data[key] for key in data.keys()}
+        expression_att_names = {'#name': 'name'}
+
+        print('update_expression: {}'.format(update_expression))
+        print('expression_att_vals: {}'.format(expression_att_vals))
+        print('expression_att_names: {}'.format(expression_att_names))
 
         params = {
             'Key': {
@@ -30,6 +37,7 @@ def main(event, context):
                 'deckId': event['pathParameters']['id']
             },
             'UpdateExpression': update_expression,
+            'ExpressionAttributeNames': expression_att_names,
             'ExpressionAttributeValues': expression_att_vals,
             'ReturnValues': 'ALL_NEW'
         }

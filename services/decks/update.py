@@ -5,7 +5,7 @@ import json
 import os
 import libs.dynamodb_lib as dynamodb_lib
 from libs.response_lib import success, failure
-from libs.decks_lib import parse_deck_list, get_card_data
+from libs.decks_lib import parse_deck_list, get_card_data, get_deck_profile
 
 
 def main(event, context):
@@ -18,6 +18,7 @@ def main(event, context):
         for i, card in enumerate(cards):
             cards[i]['data'] = get_card_data(card)
 
+        data['profile'] = get_deck_profile(cards)
         data['cards'] = cards
         data['display'] = cards[0]['data']['image_uris']['art_crop']
 

@@ -2,6 +2,7 @@ import sys
 sys.path.append('../..')
 
 import os
+import pandas as pd
 import libs.dynamodb_lib as dynamodb_lib
 from boto3.dynamodb.conditions import Key, Attr
 
@@ -77,4 +78,43 @@ def get_card_data(card):
         result['Items'][0]['oracle_text'] = '{} // {}'.format(txt1, txt2)
         result['Items'][0].pop('card_faces')
 
+    result['Items'][0]['mana_cost'] = get_mana_cost(result['Items'][0]['mana_cost'])
+
     return result['Items'][0]
+
+
+def get_mana_cost(mana_cost):
+    cost = []
+    mana_cost = mana_cost.replace(' ','').split('//') # in case it's an Adventure card
+
+    for face_cost in mana_cost:
+        this_cost = {'W':0, 'B':0, 'R':0, 'G':0, 'U':0,
+                     'X':0, 'N':0, 'D':0, 'tot':0}
+        face_cost = face_cost.replace('}{','-').replace('}','').replace('{','').split('-')
+        for col in face_cost:
+            if col.isdigit():
+                this_cost['N'] = int(col)
+            elif '/' in col:
+                this_cost['D'] = this_cost['D'] + 1
+            else:
+                this_cost[col] = this_cost[col] + 1
+        this_cost['tot'] = sum([int(amt) if amt.isdigit() else 1 for amt in face_cost])
+        cost.append(this_cost)
+
+    return cost
+
+
+def get_deck_profile(cards):
+    profile = {}
+
+    # Mana Curve
+    mana_curve = [cost['tot'] for card in cards for cost in card['data']['mana_cost']]
+    mana_curve = [cost if cost <= 6 else 6 for cost in mana_curve]
+    mana_curve = pd.Series(mana_curve).value_counts().to_dict()
+    for cost in range(7):
+        mana_curve[cost] = 0 if cost not in mana_curve.keys() else mana_curve[cost]
+    profile['mana_curve'] = mana_curve
+
+    # Next stat
+
+    return profile

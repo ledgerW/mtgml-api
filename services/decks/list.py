@@ -17,7 +17,7 @@ def main(event, context):
         }
         result = dynamodb_lib.call(table, 'query', params)
 
-        response = success(result['Items'])
+        response = success(result['Items'][0]['profile'])
     except:
         response = failure({'status': False})
 

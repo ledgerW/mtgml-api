@@ -118,7 +118,7 @@ def get_deck_profile(cards):
     mana_curve = pd.Series(mana_curve).value_counts().to_dict()
     for cost in range(7):
         mana_curve[cost] = 0 if cost not in mana_curve.keys() else mana_curve[cost]
-    mana_curve = {str(key): val for key, val in mana_curve.items()}
+    mana_curve = {str(key): int(val) for key, val in mana_curve.items()}
     profile['mana_curve'] = mana_curve
 
     # Next stat

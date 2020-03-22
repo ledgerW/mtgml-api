@@ -1,4 +1,5 @@
 import json
+from decimal import Decimal
 
 headers = {
     "Access-Control-Allow-Origin": "*",
@@ -8,6 +9,12 @@ headers = {
 def set_default(obj):
     if isinstance(obj, set):
         return list(obj)
+    if isinstance(obj, Decimal):
+        if float(obj).is_integer():
+            return int(obj)
+        else:
+            return float(obj)
+    raise TypeError
 
 
 def build_response(status_code, body):
@@ -16,7 +23,7 @@ def build_response(status_code, body):
         'headers': headers,
         'body': json.dumps(body, default=set_default)
     }
-
+    
 
 def success(body):
     return build_response(200, body)

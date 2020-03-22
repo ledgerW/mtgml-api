@@ -1,7 +1,7 @@
 {
   "requestContext": {
     "identity": {
-      "cognitoIdentityId": "0d1fac75-ee70-44f2-8de7-59fd3eef206c"
+      "cognitoIdentityId": "us-east-1:8a2874cb-884e-4e36-a3a4-4b9e60b816a7"
     }
   }
 }

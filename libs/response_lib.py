@@ -8,7 +8,7 @@ headers = {
 def set_default(obj):
     if isinstance(obj, set):
         return list(obj)
-    raise TypeError
+
 
 def build_response(status_code, body):
     return {

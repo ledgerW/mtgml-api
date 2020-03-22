@@ -78,7 +78,11 @@ def get_card_data(card):
         result['Items'][0]['oracle_text'] = '{} // {}'.format(txt1, txt2)
         result['Items'][0].pop('card_faces')
 
-    result['Items'][0]['mana_cost'] = get_mana_cost(result['Items'][0]['mana_cost'])
+    try:
+        result['Items'][0]['mana_cost'] = get_mana_cost(result['Items'][0]['mana_cost'])
+    except:
+        result['Items'][0]['mana_cost'] = [{'W':0, 'B':0, 'R':0, 'G':0, 'U':0,
+                                            'X':0, 'N':0, 'D':0, 'tot':0}]
 
     return result['Items'][0]
 
@@ -108,11 +112,13 @@ def get_deck_profile(cards):
     profile = {}
 
     # Mana Curve
-    mana_curve = [cost['tot'] for card in cards for cost in card['data']['mana_cost']]
+    mana_curve = [[cost['tot']]*int(card['n']) for card in cards for cost in card['data']['mana_cost']]
+    mana_curve = [cost for n in mana_curve for cost in n]
     mana_curve = [cost if cost <= 6 else 6 for cost in mana_curve]
     mana_curve = pd.Series(mana_curve).value_counts().to_dict()
     for cost in range(7):
         mana_curve[cost] = 0 if cost not in mana_curve.keys() else mana_curve[cost]
+    mana_curve = {str(key): val for key, val in mana_curve.items()}
     profile['mana_curve'] = mana_curve
 
     # Next stat

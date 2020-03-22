@@ -15,7 +15,6 @@ def main(event, context):
 
     #try:
     data = json.loads(event['body'])
-    print(data)
 
     cards = parse_deck_list(data['content'])
 

@@ -2,9 +2,12 @@ import sys
 sys.path.append('../..')
 
 import os
+from collections import Counter
 import pandas as pd
 import libs.dynamodb_lib as dynamodb_lib
 from boto3.dynamodb.conditions import Key, Attr
+
+TYPES = ['Land','Creature','Enchantment','Sorcery','Instant','Artifact','Planeswalker']
 
 
 def parse_deck_list(content):
@@ -84,6 +87,8 @@ def get_card_data(card):
         result['Items'][0]['mana_cost'] = [{'W':0, 'B':0, 'R':0, 'G':0, 'U':0,
                                             'X':0, 'N':0, 'D':0, 'tot':0}]
 
+    result['Items'][0]['type'] = parse_type_line(result['Items'][0]['type_line'])
+
     return result['Items'][0]
 
 
@@ -108,19 +113,54 @@ def get_mana_cost(mana_cost):
     return cost
 
 
-def get_deck_profile(cards):
-    profile = {}
+def parse_type_line(type_line):
+    taxonomy = Counter()
 
-    # Mana Curve
-    mana_curve = [[cost['tot']]*int(card['n']) for card in cards for cost in card['data']['mana_cost']]
+    for type in TYPES:
+        taxonomy[type] += 1 if type in type_line else taxonomy[type]
+
+    return taxonomy
+
+
+def get_mana_curve(cards):
+    #mana_curve = [[cost['tot']]*int(card['n']) for card in cards for cost in card['data']['mana_cost']]
+    mana_curve = [[cost['tot']]*int(n) for n, mana in zip(cards.n, cards.mana_cost) for cost in mana]
     mana_curve = [cost for n in mana_curve for cost in n]
     mana_curve = [cost if cost <= 6 else 6 for cost in mana_curve]
     mana_curve = pd.Series(mana_curve).value_counts().to_dict()
     for cost in range(7):
         mana_curve[cost] = 0 if cost not in mana_curve.keys() else mana_curve[cost]
-    mana_curve = {str(key): int(val) for key, val in mana_curve.items()}
-    profile['mana_curve'] = mana_curve
 
-    # Next stat
+    return {str(key): int(val) for key, val in mana_curve.items()}
+
+
+def get_deck_profile(cards):
+    profile = {}
+
+    cards_data = [card['data'] for card in cards]
+    cards_df = pd.DataFrame(cards_data)
+    cards_df['n'] = [card['n'] for card in cards]
+    for col in cards_df.columns:
+        if isinstance(cards_df[col][0], dict):
+            cards_df = pd.concat([cards_df.drop([col], axis=1), cards_df[col].apply(pd.Series)], axis=1)
+
+    for col in cards_df.columns:
+        if isinstance(cards_df[col][0], set):
+            cards_df[col] = cards_df[col].apply(list)
+
+    # Get Mana Curves
+    for type in ['All', 'Creature', 'NonCreature']:
+        if type == 'All':
+            profile['{}_mana_curve'.format(type)] = get_mana_curve(cards_df[['n','mana_cost']])
+        elif type == 'Creature':
+            profile['{}_mana_curve'.format(type)] = get_mana_curve(cards_df.loc[cards_df['Creature']>0, ['n','mana_cost']])
+        else:
+            profile['{}_mana_curve'.format(type)] = get_mana_curve(cards_df.loc[cards_df['Creature']==0, ['n','mana_cost']])
+
+    # Next
+    n = cards_df[['n']].values.astype(int)
+    types = cards_df[TYPES]
+    profile['type_curve'] = (types * n).sum(axis=0).to_dict()
+    #print(profile)
 
     return profile

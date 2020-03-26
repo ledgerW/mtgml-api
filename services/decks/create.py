@@ -7,7 +7,7 @@ import uuid
 import datetime
 import libs.dynamodb_lib as dynamodb_lib
 from libs.response_lib import success, failure
-from libs.decks_lib import parse_deck_list, get_card_data, get_deck_profile
+from libs.decks_lib import parse_deck_list, get_card_data, get_deck_profile, parse_type_line
 
 
 def main(event, context):
@@ -22,6 +22,9 @@ def main(event, context):
         cards[i]['data'] = get_card_data(card)
 
     profile = get_deck_profile(cards)
+
+    # TEMP TEMP TEMP
+    #return ''
 
     Item = {
             'userId': event['requestContext']['identity']['cognitoIdentityId'],

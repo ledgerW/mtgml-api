@@ -15,7 +15,6 @@ dependencies:
   - pandas
   - numpy
   - pytorch-cpu
-  - torchvision-cpu
   - scikit-learn
   - mlflow
   - jupyterlab

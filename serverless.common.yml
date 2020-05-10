@@ -19,8 +19,8 @@ custom:
   globalCardsTable: global-cards
   userDecksTable: ${self:custom.stage}-user-decks
   userCardsTable: ${self:custom.stage}-user-cards
-  cardSearchDomainEndpoint:
-    'Fn::ImportValue': CardSearchDomainEndpoint
+  #cardSearchDomainEndpoint:
+  #  'Fn::ImportValue': CardSearchDomainEndpoint
   pythonRequirements:
     layer:
       name: ${self:service}

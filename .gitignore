@@ -20,7 +20,7 @@ __pycache__/
 node_modules/
 
 data/
-.ipynp_checkpoints/
+.ipynb_checkpoints
 
 # Dependency directories
 node_modules

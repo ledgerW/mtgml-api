@@ -6,7 +6,6 @@ from libs.payment_lib import *
 
 
 class PaymentTests(unittest.TestCase):
-
     def set_up(self):
         pass
 
@@ -27,6 +26,7 @@ class PaymentTests(unittest.TestCase):
         cost = 10100
 
         self.assertEqual(calculate_cost(storage), cost)
+
 
 if __name__ == '__main__':
     unittest.main()

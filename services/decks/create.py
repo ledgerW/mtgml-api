@@ -23,7 +23,7 @@ def main(event, context):
 
     profile = get_deck_profile(cards)
 
-    # TEMP TEMP TEMP
+    # TODO: remove before commit
     #return ''
 
     Item = {

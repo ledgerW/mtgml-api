@@ -134,6 +134,9 @@ def get_mana_curve(cards):
     return {str(key): int(val) for key, val in mana_curve.items()}
 
 
+#TODO: Calculate Deck2Vec (TF-IDF Doc2Vec); on Oracle Text; CosSim to compare
+#TODO: Card embeddings with Oracle Text, Type, Color, Mana Cost
+#TODO: Visualize deck similarities with t-SNE
 def get_deck_profile(cards):
     profile = {}
 
@@ -157,7 +160,7 @@ def get_deck_profile(cards):
         else:
             profile['{}_mana_curve'.format(type)] = get_mana_curve(cards_df.loc[cards_df['Creature']==0, ['n','mana_cost']])
 
-    # Next
+    # Get Type Curve
     n = cards_df[['n']].values.astype(int)
     types = cards_df[TYPES]
     profile['type_curve'] = (types * n).sum(axis=0).to_dict()
